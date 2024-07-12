@@ -8,6 +8,7 @@ import Location from './models/location.js';
 import { connectToMongo } from './Db/db.js'; // Your MongoDB connection function
 import User from './models/user.js'; // Assuming you have a User model
 import { authenticateUserDetail } from './middleware/auth.js';
+import authRoutes from './routes/auth.js';
 
 const app = express();
 const server = createServer(app);
@@ -30,6 +31,8 @@ app.use(cors());
 app.get("/", (req, res) => {
   res.json("Kamal Houing Backend Working Good");
 });
+
+app.use('/api/auth',authRoutes)
 
 // POST endpoint to receive location updates
 app.post('/location', authenticateUserDetail, async (req, res) => {
