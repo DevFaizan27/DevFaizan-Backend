@@ -14,7 +14,7 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: 'https://dev-faizan-frontend.vercel.app',
+    origin: '*',
     methods: ['GET', 'POST'],
   },
 });
@@ -29,25 +29,38 @@ app.use(express.json());
 app.use(cors());
 
 app.get("/", (req, res) => {
-  res.json("Kamal Houing Backend Working Good");
+  res.json("Kamal Housing Backend Working Good");
 });
 
-app.use('/api/auth',authRoutes)
+app.use('/api/auth', authRoutes);
 
 // POST endpoint to receive location updates
 app.post('/location', authenticateUserDetail, async (req, res) => {
   try {
     const { latitude, longitude } = req.body;
-    const newLocation = new Location({
-      employeeId: req.user, // Assuming req.user contains the authenticated user's details
-      latitude,
-      longitude,
-    });
-    await newLocation.save();
+    const employeeId = req.user._id;
+
+    // Check if location already exists for the user
+    let location = await Location.findOne({ employeeId });
+    if (location) {
+      // Update existing location
+      location.latitude = latitude;
+      location.longitude = longitude;
+      location.updatedAt = Date.now();
+    } else {
+      // Create new location
+      location = new Location({
+        employeeId,
+        latitude,
+        longitude,
+        updatedAt: Date.now(),
+      });
+    }
+    await location.save();
 
     // Emit location update to all connected clients
     io.emit('locationBroadcast', {
-      employeeId: req.user,
+      employeeId,
       latitude,
       longitude,
     });
