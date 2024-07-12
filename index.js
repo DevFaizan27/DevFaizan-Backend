@@ -27,7 +27,9 @@ app.use(express.json());
 // CORS middleware
 app.use(cors());
 
-
+app.get('/',async(req,res)=>{
+  return res.status(200).json({message: 'OK'});
+})
 
 // POST endpoint to receive location updates
 app.post('/location', authenticateUserDetail, async (req, res) => {
