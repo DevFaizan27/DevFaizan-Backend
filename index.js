@@ -14,7 +14,7 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: 'https://dev-faizan-frontend.vercel.app/',
+    origin: 'https://dev-faizan-frontend.vercel.app',
     methods: ['GET', 'POST'],
   },
 });
